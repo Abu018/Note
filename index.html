@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0e0f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .app-container {
+      width: 400px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h2 {
+      color: #5e5eff;
+    }
+
+    .create-btn {
+      background-color: #800080;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .create-btn:hover {
+      background-color: #5e5eff;
+    }
+
+    .note {
+      background-color: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .note p {
+      margin: 0;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ff5e5e;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="app-header">
+      <h2>Notes</h2>
+      <button class="create-btn" onclick="addNote()">Create Notes</button>
+    </div>
+    <textarea id="noteInput" placeholder="Write your note here..." style="width: 100%; padding: 10px; margin-bottom: 20px;"></textarea>
+    <div id="notesList"></div>
+  </div>
+
+  <script>
+    const notesList = document.getElementById('notesList');
+    const noteInput = document.getElementById('noteInput');
+
+    // Load notes from localStorage on page load
+    window.onload = function() {
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      savedNotes.forEach(note => addNoteToDOM(note));
+    };
+
+    // Function to add a note
+    function addNote() {
+      const noteText = noteInput.value.trim();
+
+      if (noteText === '') {
+        alert('Please enter a note.');
+        return;
+      }
+
+      // Add the note to the DOM
+      addNoteToDOM(noteText);
+
+      // Save the note to localStorage
+      saveNoteToLocalStorage(noteText);
+
+      // Clear the input field
+      noteInput.value = '';
+    }
+
+    // Function to add the note to the DOM
+    function addNoteToDOM(noteText) {
+      // Create a new div for the note
+      const noteDiv = document.createElement('div');
+      noteDiv.classList.add('note');
+
+      // Create a paragraph for the note text
+      const notePara = document.createElement('p');
+      notePara.textContent = noteText;
+
+      // Create the delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.classList.add('delete-btn');
+      deleteBtn.innerHTML = '🗑'; // Trash icon
+
+      // Delete note on button click
+      deleteBtn.onclick = function () {
+        notesList.removeChild(noteDiv);
+        deleteNoteFromLocalStorage(noteText);
+      };
+
+      // Append the text and delete button to the note div
+      noteDiv.appendChild(notePara);
+      noteDiv.appendChild(deleteBtn);
+
+      // Add the new note to the notes list
+      notesList.appendChild(noteDiv);
+    }
+
+    // Function to save the note to localStorage
+    function saveNoteToLocalStorage(noteText) {
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      savedNotes.push(noteText);
+      localStorage.setItem('notes', JSON.stringify(savedNotes));
+    }
+
+    // Function to delete the note from localStorage
+    function deleteNoteFromLocalStorage(noteText) {
+      let savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      savedNotes = savedNotes.filter(note => note !== noteText);
+      localStorage.setItem('notes', JSON.stringify(savedNotes));
+    }
+  </script>
+
+</body>
+</html>
